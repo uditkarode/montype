@@ -1,0 +1,43 @@
+cradle:
+  cabal:
+    - path: "src/Main.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Descriptors/Helpers.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Descriptors/Object.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Descriptors/Array.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Descriptors/Types.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Miscellaneous.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Descriptor.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/TopLevel.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Parser/Property.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Codegen/Codegen.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Codegen/Helpers.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Codegen/Getters.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Logger.hs"
+      component: "MonType:exe:MonType"
+
+    - path: "src/Config.hs"
+      component: "MonType:exe:MonType"

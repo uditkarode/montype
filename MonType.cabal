@@ -1,0 +1,36 @@
+cabal-version:       >=1.10
+
+name:                MonType
+version:             0.1.0.0
+description:         Generate TypeScript type definitions for Mongoose models.
+author:              Udit Karode
+maintainer:          udit.karode@gmail.com
+build-type:          Simple
+extra-source-files:  CHANGELOG.md
+
+executable MonType
+  main-is:             Main.hs
+  other-modules:       Parser.Descriptors.Helpers
+                     , Parser.Descriptors.Object
+                     , Parser.Descriptors.Array
+                     , Parser.Descriptors.Types
+                     , Parser.Miscellaneous
+                     , Parser.Descriptor
+                     , Parser.TopLevel
+                     , Parser.Property
+                     , Codegen.Codegen
+                     , Codegen.Helpers
+                     , Codegen.Getters
+                     , Logger
+                     , Config
+  build-depends:       base >=4.13 && <4.14
+                     , optparse-applicative
+                     , pretty-terminal
+                     , containers
+                     , directory
+                     , either
+                     , parsec
+                     , text
+                     , ini
+  hs-source-dirs:      src
+  default-language:    Haskell2010
