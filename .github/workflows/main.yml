@@ -12,7 +12,10 @@ jobs:
     steps:
       - run: git clone https://github.com/uditkarode/montype /montype
       - run: apt update
-      - run: apt install --yes upx
+      - run: apt install --yes wget
+      - run: wget https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz
+      - run: tar -xvf upx-3.96-amd64_linux.tar.xz
+      - run: mv upx-3.96-amd64_linux/upx /usr/local/bin/
       - run: cabal update
       - run: cd /montype && bash build.sh
       - uses: actions/upload-artifact@v2
