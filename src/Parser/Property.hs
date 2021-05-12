@@ -37,13 +37,24 @@ schemaProperty = do
   s >> P.char ':' >> s
   Property (T.pack itName) <$> getDescriptor
 
+-- P.anyToken but accepts
+-- spaces in between
+anyTokenS :: Parser Char
+anyTokenS = do
+  v <- optionMaybe (try P.anyToken)
+  case v of
+    Nothing -> do
+      s
+      pure ' '
+    Just parsed -> P.anyToken
+
 -- parses a schema option (a: b)
 schemaOption :: Parser (Text, Text)
 schemaOption = do
   s
   key <- identifier
   s >> P.char ':' >> s
-  val <- P.anyToken `P.manyTill` (s >> lookAhead (P.oneOf [',', '}']))
+  val <- anyTokenS `P.manyTill` (s >> lookAhead (P.oneOf [',', '}']))
   s
   pure (T.pack key, T.pack val)
 
