@@ -9,7 +9,7 @@ data Descriptor
     -- | for example String in { type: String }
   = Descriptor Text
     -- | for example String in { username: String }
-    -- | this is converted to an IntermediateObject
+    -- | this is converted to a TreeEndDescriptor
     -- | before being used (except in IntermediateObjects)
   | Shorthand Text
     -- | for example [Number], [ [Number] ], or []
