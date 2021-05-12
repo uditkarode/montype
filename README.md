@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/header.png">
+  <img src="images/header.jpg">
 </p>
   
 ## Purpose
