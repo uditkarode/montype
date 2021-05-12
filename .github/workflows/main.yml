@@ -1,0 +1,21 @@
+name: "Bob The Builder"
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: haskell:8.8.4-buster
+    steps:
+      - run: git clone https://github.com/uditkarode/montype /montype
+      - run: apt update
+      - run: apt install upx
+      - run: cabal update
+      - run: cd /montype && bash build.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: MonType
+          path: /montype/montype
