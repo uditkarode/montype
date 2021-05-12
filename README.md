@@ -83,7 +83,7 @@ You can install MonType by either:
 * Compiling it yourself using [build.sh](https://github.com/uditkarode/montype/blob/master/build.sh)
   
 ## Configuration
-MonType works by 'mapping' descriptors to their TypeScript types, for example "String" -> "string", "Date" -> "date", and so on.
+MonType works by 'mapping' descriptors to their TypeScript types, for example `String` -> `string`, `Date` -> `date`, and so on.
   
 This means that if you use a custom type in your Schema, MonType will fail:
 ```diff
@@ -91,13 +91,13 @@ This means that if you use a custom type in your Schema, MonType will fail:
 -   | couldn't map the schema type 'MyType' to a TypeScript type!
 ```
   
-To get around this, you can create a configuration file called 'montype.ini' (or use the `-c` flag to provide a path) with the contents:
+To get around this, you can create a configuration file called `montype.ini` (or use the `-c` flag to provide a path) with the contents:
 ```ini
 [types]
 MyType = number
 ```
   
-MonType will now interpret 'MyType' as 'number', and succeed.
+MonType will now interpret `MyType` as `number`, and succeed.
 ```diff
 + [✓] saved to 'MonType.ts'
 ```
