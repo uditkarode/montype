@@ -3,7 +3,7 @@
 </p>
   
 ## Purpose
-MonType converts your [mongoose](https://github.com/Automattic/mongoose) schemas into TypeScript interfaces, so that you don't have to do it manually.
+MonType converts your [mongoose](https://github.com/Automattic/mongoose) schemas into TypeScript interfaces so you don't have to.
   
 ## Usage
 Define your schema, like you always do; example from [mongoosejs.com](https://mongoosejs.com/docs/schematypes.html)
@@ -72,9 +72,9 @@ interface schema {
 Just like that!
   
 ## How it works
-MonType parses the source file, and generates an AST from it. It then generates a TypeScript interface from the AST.  
+MonType parses the source file, and generates an AST from it. It then generates a TypeScript interface from the AST. What this means is that MonType only sees your schemas as a structured chunk of text -- nothing less, nothing more.
   
-This means that it's completely independent from your source, does not add additional dependencies to your project, is highly portable, and is capable on working on any file that looks like a Mongoose schema.
+It's completely independent from your source, does not add additional dependencies to your project, and is highly portable and capable on working on any file that looks like a Mongoose schema.
 
 ## Installation
 You can install MonType by either:
@@ -83,7 +83,7 @@ You can install MonType by either:
 * Compiling it yourself using [build.sh](https://github.com/uditkarode/montype/blob/master/build.sh)
   
 ## Configuration
-MonType works by 'mapping' descriptors to their TypeScript types, for example `String` -> `string`, `Date` -> `date`, and so on.
+MonType works by 'mapping' descriptors to their TypeScript types, for example `String` -> `string`, `Number` -> `number`, and so on.
   
 This means that if you use a custom type in your Schema, MonType will fail:
 ```diff
