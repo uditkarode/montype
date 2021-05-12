@@ -57,7 +57,8 @@ schemaOptions = do
 myFoldl :: Foldable t => t a -> b -> (b -> a -> b) -> b
 myFoldl list def func = foldl func def list
 
--- gets properties that the given option map
+-- gets properties that the given
+-- option map can add to a schema
 -- https://mongoosejs.com/docs/guide.html
 getPropsFromOptions :: [(Text, Text)] -> [Property]
 getPropsFromOptions options = do
