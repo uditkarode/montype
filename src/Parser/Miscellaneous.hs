@@ -2,7 +2,7 @@ module Parser.Miscellaneous where
 
 import           Text.Parsec          as P (anyChar, char, lookAhead, manyTill,
                                             newline, skipMany, skipMany1, space,
-                                            string, (<|>))
+                                            string, try, (<|>))
 import           Text.Parsec.Language as PLan (emptyDef)
 import           Text.Parsec.String   as PStr (Parser)
 import qualified Text.Parsec.Token    as PTok
@@ -36,7 +36,7 @@ s1 = P.skipMany1 P.space <|> P.skipMany1 P.newline
 
 -- var, let, or const
 jsVarDef :: Parser String
-jsVarDef = P.string "var" <|> P.string "let" <|> P.string "const"
+jsVarDef = try (P.string "var") <|> try (P.string "let") <|> try (P.string "const")
 
 -- mongoose.Schema or Schema
 schemaFun :: Parser String
