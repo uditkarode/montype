@@ -5,8 +5,8 @@ import           Data.List                (union)
 import           Data.Text                (Text)
 import qualified Data.Text                as T
 import           Text.Parsec              as P (anyChar, anyToken, char,
-                                                lookAhead, manyTill, oneOf,
-                                                optionMaybe, try, (<|>))
+                                                lookAhead, manyTill, newline,
+                                                oneOf, optionMaybe, try, (<|>))
 import           Text.Parsec.String       as PStr (Parser)
 
 import           Parser.Descriptor        (getDescriptor)
@@ -48,13 +48,18 @@ anyTokenS = do
       pure ' '
     Just parsed -> P.anyToken
 
+-- parses any text with spaces until a ',' or '}'
+-- is encountered, and the ',' or '}' is not consumed
+rightSide :: Parser String
+rightSide = anyTokenS `P.manyTill` (s >> lookAhead (P.oneOf [',', '}']))
+
 -- parses a schema option (a: b)
 schemaOption :: Parser (Text, Text)
 schemaOption = do
   s
   key <- identifier
   s >> P.char ':' >> s
-  val <- anyTokenS `P.manyTill` (s >> lookAhead (P.oneOf [',', '}']))
+  val <- try (curly rightSide) <|> rightSide
   s
   pure (T.pack key, T.pack val)
 
