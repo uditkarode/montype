@@ -12,7 +12,7 @@ jobs:
     steps:
       - run: git clone https://github.com/uditkarode/montype /montype
       - run: apt update
-      - run: apt install upx
+      - run: apt install --yes upx
       - run: cabal update
       - run: cd /montype && bash build.sh
       - uses: actions/upload-artifact@v2
