@@ -75,6 +75,12 @@ Just like that!
 MonType parses the source file, and generates an AST from it. It then generates a TypeScript interface from the AST.  
   
 This means that it's completely independent from your source, does not add additional dependencies to your project, is highly portable, and is capable on working on any file that looks like a Mongoose schema.
+
+## Installation
+You can install MonType by either:
+* Downloading a precompiled binary from the [releases](https://github.com/uditkarode/montype/releases) page
+* Downloading a build artifact from a Github Actions [run](https://github.com/uditkarode/montype/actions)
+* Compiling it yourself using [build.sh](https://github.com/uditkarode/montype/blob/master/build.sh)
   
 ## Configuration
 MonType works by 'mapping' descriptors to their TypeScript types, for example "String" -> "string", "Date" -> "date", and so on.
