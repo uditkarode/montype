@@ -134,7 +134,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
           pure acc
       else do
         -- couldn't parse current file, show error
-        logMultiLineError currPath $ show (fromLeft' result)
+        logMultiLineError currPath $ errorBundlePretty (fromLeft' result)
         when strictMode $ error "\nstrict flag enabled, exiting"
         pure acc
 
