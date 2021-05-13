@@ -22,6 +22,7 @@ executable MonType
                      , Codegen.Codegen
                      , Codegen.Helpers
                      , Codegen.Getters
+                     , Paths_MonType
                      , Utils
                      , Config
   build-depends:       base >=4.13 && <4.14

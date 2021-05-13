@@ -11,12 +11,14 @@ import           Data.List               (isSuffixOf)
 import qualified Data.Map                as M
 import           Data.Text               (Text)
 import qualified Data.Text               as T
+import           Data.Version            (showVersion)
 import           Options.Applicative     as O (Parser, execParser, flag,
                                                fullDesc, header, help, helper,
-                                               info, long, metavar, progDesc,
-                                               short, strOption, switch, value,
-                                               (<**>))
-import qualified System.Console.Pretty   as SP (Color (Red),
+                                               info, infoOption, long, metavar,
+                                               progDesc, short, strOption,
+                                               switch, value, (<**>))
+import           Paths_MonType           (version)
+import qualified System.Console.Pretty   as SP (Color (Red, Yellow),
                                                 Pretty (color, style),
                                                 Style (Bold))
 import           System.Directory        (doesDirectoryExist, doesFileExist,
@@ -169,7 +171,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
 main :: IO ()
 main = montype =<< execParser opts
   where
-    opts = info (cliArgs <**> helper)
+    opts = info (cliArgs <**> helper <**> infoOption ("MonType v" <> (SP.style SP.Bold . SP.color SP.Yellow) (showVersion version)) (O.long "version" <> O.short 'v' <> O.help "Show version"))
       ( fullDesc
-     <> progDesc "generate TypeScript interfaces from Mongoose schemas"
+     <> progDesc "Generate TypeScript interfaces from Mongoose schemas"
      <> header "MonType" )
