@@ -32,7 +32,7 @@ commaSep p = P.sepBy p (symbol ",")
 lexeme = PLex.lexeme sc
 
 identifier' :: Parser String
-identifier' = lexeme ((:) <$> letterChar <*> many alphaNumChar)
+identifier' = lexeme ((:) <$> (letterChar <|> PStr.char '_') <*> many (alphaNumChar <|> PStr.char '_'))
 
 identifier :: Parser T.Text
 identifier = identifier' <&> T.pack
