@@ -1,17 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Parser.Property where
 
+import           Control.Applicative
 import           Data.List                (union)
 import           Data.Text                (Text)
 import qualified Data.Text                as T
-import           Text.Parsec              as P (anyChar, anyToken, char,
-                                                lookAhead, manyTill, newline,
-                                                oneOf, optionMaybe, try, (<|>))
-import           Text.Parsec.String       as PStr (Parser)
+import           Data.Void
+import           Text.Megaparsec          as P
+import           Text.Megaparsec.Char     as PStr
 
 import           Parser.Descriptor        (getDescriptor)
 import           Parser.Descriptors.Types (Descriptor)
 import           Parser.Miscellaneous     (commaSep, curly, identifier, s)
+
+type Parser = Parsec Void T.Text
 
 data Property
   = Property Text Descriptor
@@ -34,19 +36,19 @@ schemaProperty :: Parser Property
 schemaProperty = do
   s
   itName <- identifier
-  s >> P.char ':' >> s
-  Property (T.pack itName) <$> getDescriptor
+  s >> PStr.char ':' >> s
+  Property itName <$> getDescriptor
 
 -- P.anyToken but accepts
 -- spaces in between
 anyTokenS :: Parser Char
 anyTokenS = do
-  v <- optionMaybe (try P.anyToken)
+  v <- optional (try P.anySingle)
   case v of
     Nothing -> do
       s
       pure ' '
-    Just parsed -> P.anyToken
+    Just parsed -> P.anySingle
 
 -- parses any text with spaces until a ',' or '}'
 -- is encountered, and the ',' or '}' is not consumed
@@ -58,16 +60,16 @@ schemaOption :: Parser (Text, Text)
 schemaOption = do
   s
   key <- identifier
-  s >> P.char ':' >> s
+  s >> PStr.char ':' >> s
   val <- try (curly rightSide) <|> rightSide
   s
-  pure (T.pack key, T.pack val)
+  pure (key, T.pack val)
 
 -- parses the second argument to a schema,
 -- the object containing schema options
 schemaOptions :: Parser [(Text, Text)]
 schemaOptions = do
-  s >> P.char ',' >> s
+  s >> PStr.char ',' >> s
   curly $ commaSep (schemaOption <|> emptyOption)
 
 myFoldl :: Foldable t => t a -> b -> (b -> a -> b) -> b
@@ -96,7 +98,7 @@ schemaProperties :: Parser [Property]
 schemaProperties = do
   properties <- curly $ commaSep (schemaProperty <|> emptyProperty)
 
-  options <- optionMaybe (try schemaOptions)
+  options <- optional (try schemaOptions)
 
   case options of
     Nothing -> pure properties

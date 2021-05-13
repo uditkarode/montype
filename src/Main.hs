@@ -22,7 +22,8 @@ import qualified System.Console.Pretty   as SP (Color (Red),
 import           System.Directory        (doesDirectoryExist, doesFileExist,
                                           getDirectoryContents, listDirectory,
                                           withCurrentDirectory)
-import           Text.Parsec             as P (parse)
+import           Text.Megaparsec         as P (ShowErrorComponent (showErrorComponent),
+                                               errorBundlePretty, parse)
 
 import           Codegen.Codegen         (makeInterface)
 import           Codegen.Helpers         (myFoldM)
@@ -114,7 +115,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
       content <- (withCurrentDirectory target . readFile) curr
 
       let currPath = removeTrailing target '/' <> "/" <> curr
-      let result = P.parse schema curr content
+      let result = P.parse schema curr (T.pack content)
 
       if isRight result then do
         -- AST for current file generated
@@ -142,7 +143,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
   else if isFile then do
     -- target is a file
     content <- readFile target
-    let result = P.parse schema target content
+    let result = P.parse schema target (T.pack content)
 
     if isRight result then do
         -- AST generated
@@ -160,7 +161,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
             logMultiLineError target $ fromLeft' interfaceStr
     else do
       -- couldn't parse
-      logMultiLineError target $ show (fromLeft' result)
+      logMultiLineError target $ errorBundlePretty (fromLeft' result)
   else do
     -- nothing exists at target dir
     logError $ "No file or directory found at '" <> target <> "'!"

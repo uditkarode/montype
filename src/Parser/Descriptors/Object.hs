@@ -3,9 +3,9 @@ module Parser.Descriptors.Object where
 
 import           Data.Text                  (Text)
 import qualified Data.Text                  as T
-import           Text.Parsec                as P (char, (<|>))
-import           Text.Parsec.String         as PStr (Parser)
-import qualified Text.Parsec.Token          as PTok
+import           Data.Void
+import           Text.Megaparsec            as P
+import           Text.Megaparsec.Char       as PStr
 
 import           Parser.Descriptors.Array   (arrayDescriptor)
 import           Parser.Descriptors.Helpers (anyDescriptor, justDescriptor,
@@ -13,6 +13,8 @@ import           Parser.Descriptors.Helpers (anyDescriptor, justDescriptor,
 import           Parser.Descriptors.Types   (Descriptor (Descriptor, Final, IntermediateObject, NoValue),
                                              TreeEndDescriptor (TreeEndDescriptor))
 import           Parser.Miscellaneous       (commaSep, curly, identifier, s)
+
+type Parser = Parsec Void T.Text
 
 -- used to implement trailing comma
 emptyObj :: Parser (Text, Descriptor)
@@ -23,10 +25,10 @@ propertyDesc :: Parser (Text, Descriptor)
 propertyDesc = do
   s
   key <- identifier
-  s >> P.char ':' >> s
+  s >> PStr.char ':' >> s
   val <- anyDescriptor objDescriptor arrayDescriptor justDescriptor
   s
-  pure (T.pack key, val)
+  pure (key, val)
 
 -- Contains functions for when the right side is an object
 -- parses { propertyDesc, propertyDesc, ... }

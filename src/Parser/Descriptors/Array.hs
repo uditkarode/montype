@@ -1,10 +1,7 @@
 module Parser.Descriptors.Array where
 
-import                          Text.Parsec                as P (getPosition,
-                                                                 try, (<|>))
-import                          Text.Parsec.Language       as PLan ()
-import                          Text.Parsec.String         as PStr (Parser)
-
+import                qualified Data.Text                  as T
+import                          Data.Void
 import                          Parser.Descriptors.Helpers (anyDescriptor,
                                                             shorthandDescriptor)
 import {-# SOURCE #-}           Parser.Descriptors.Object  (objDescriptor)
@@ -12,6 +9,12 @@ import                          Parser.Descriptors.Types   (Descriptor (Array, F
                                                             SchemaArray (Nested, NoItems, SchemaArray),
                                                             TreeEndDescriptor (TreeEndDescriptor))
 import                          Parser.Miscellaneous       (s, squareBrackets)
+import                          Text.Megaparsec            as P (Parsec,
+                                                                 getSourcePos,
+                                                                 try, (<|>))
+import                          Text.Megaparsec.Char
+
+type Parser = Parsec Void T.Text
 
 -- parses whitespace or nothing
 -- used to parse an empty array
@@ -39,7 +42,7 @@ arrayMaker = do
         -- This array contains a Final type in the form of a Shorthand descriptor
     Shorthand z -> pure $ Array (SchemaArray (TreeEndDescriptor (z, [])))
     _ -> do
-      pos <- getPosition
+      pos <- getSourcePos
       error $
         "Element inside array must be a final property or another array! Found: " <>
         show res <> " at " <> show pos

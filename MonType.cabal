@@ -30,7 +30,7 @@ executable MonType
                      , containers
                      , directory
                      , either
-                     , parsec
+                     , megaparsec
                      , text
                      , ini
   hs-source-dirs:      src

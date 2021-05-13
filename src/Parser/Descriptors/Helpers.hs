@@ -1,15 +1,16 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Parser.Descriptors.Helpers where
 
 import           Data.Maybe               (mapMaybe)
-import qualified Data.Text                as T (pack)
+import qualified Data.Text                as T
+import           Data.Void
 import           Parser.Descriptors.Types (Descriptor (Descriptor, Final),
                                            TreeEndDescriptor (Literal, TreeEndDescriptor))
 import           Parser.Miscellaneous     (identifier, s)
-import           Text.Parsec              as P (anyToken, lookAhead, manyTill,
-                                                oneOf, string, try, (<|>))
-import qualified Text.Parsec.Language     as PLan
-import           Text.Parsec.String       as PStr (Parser)
-import qualified Text.Parsec.Token        as PTok
+import           Text.Megaparsec          as P
+import           Text.Megaparsec.Char     as PStr
+
+type Parser = Parsec Void T.Text
 
 -- searches for a in [(a, b)]
 -- and returns Just b if found
@@ -27,7 +28,7 @@ myMap f xs = mapMaybe xs f
 -- brace and returns a Descriptor
 justDescriptor :: Parser Descriptor
 justDescriptor =
-  Descriptor . T.pack <$> P.anyToken `P.manyTill` (s >> lookAhead (P.oneOf [',', '}']))
+  Descriptor . T.pack <$> P.anySingle `P.manyTill` (s >> lookAhead (PStr.char ',' <|> PStr.char '}'))
 
 -- parses an identifier and returns a TreeEndDescriptor
 -- with the type set to the matched identifier and an
@@ -36,16 +37,16 @@ justDescriptor =
 shorthandDescriptor :: Parser Descriptor
 shorthandDescriptor = do
   i <- identifier
-  pure $ Final $ TreeEndDescriptor (T.pack i, [])
+  pure $ Final $ TreeEndDescriptor (i, [])
 
 -- parses Schema.Types.X or mongoose.Schema.Types.X
 -- and returns Types.X -- this is to remove ambiguity
 -- about the way mongoose is imported
 schemaTypeDescriptor :: Parser Descriptor
 schemaTypeDescriptor = do
-  P.string "Schema.Types." <|> P.string "mongoose.Schema.Types."
+  PStr.string "Schema.Types." <|> PStr.string "mongoose.Schema.Types."
   res <- identifier
-  pure $ Final $ Literal $ T.pack ("mongoose.Schema.Types." <> res)
+  pure $ Final $ Literal $ "mongoose.Schema.Types." <> res
 
 -- matches any one of the arguments or schemaTypeDescriptor
 -- the params weren't supposed to be arguments since they'll

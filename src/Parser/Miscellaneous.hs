@@ -1,49 +1,58 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Parser.Miscellaneous where
 
-import           Text.Parsec          as P (anyChar, char, lookAhead, manyTill,
-                                            newline, skipMany, skipMany1, space,
-                                            string, try, (<|>))
-import           Text.Parsec.Language as PLan (emptyDef)
-import           Text.Parsec.String   as PStr (Parser)
-import qualified Text.Parsec.Token    as PTok
+import           Data.Void
 
-langParser =
-  PTok.makeTokenParser
-    emptyDef
-      { PTok.commentLine = "//"
-      , PTok.commentStart = "/*"
-      , PTok.commentEnd = "*/"
-      , PTok.nestedComments = True
-      }
+import           Data.Functor
+import qualified Data.Text                  as T
+import           Text.Megaparsec            as P
+import           Text.Megaparsec.Char       as PStr
+import qualified Text.Megaparsec.Char.Lexer as PLex
 
-curly = PTok.braces langParser
+type Parser = Parsec Void T.Text
 
-parens = PTok.parens langParser
+sc :: Parser ()
+sc = PLex.space
+  space1
+  (PLex.skipLineComment "//")
+  (PLex.skipBlockComment "/*" "*/")
 
-commaSep = PTok.commaSep1 langParser
+symbol = PLex.symbol sc
 
-identifier = PTok.identifier langParser
+curly = between (symbol "{") (symbol "}")
 
-squareBrackets = PTok.brackets langParser
+parens = between (symbol "(") (symbol ")")
+
+squareBrackets = between (symbol "[") (symbol "]")
+
+commaSep p = P.sepBy p (symbol ",")
+
+lexeme = PLex.lexeme sc
+
+identifier' :: Parser String
+identifier' = lexeme ((:) <$> letterChar <*> many alphaNumChar)
+
+identifier :: Parser T.Text
+identifier = identifier' <&> T.pack
 
 -- Zero or more spaces or newlines
 s :: Parser ()
-s = P.skipMany P.space <|> P.skipMany P.newline
+s = PStr.space <|> P.skipMany PStr.newline
 
 -- One or more spaces or newlines
 s1 :: Parser ()
-s1 = P.skipMany1 P.space <|> P.skipMany1 P.newline
+s1 = PStr.space <|> P.skipSome PStr.newline
 
 -- var, let, or const
-jsVarDef :: Parser String
-jsVarDef = try (P.string "var") <|> try (P.string "let") <|> try (P.string "const")
+jsVarDef :: Parser T.Text
+jsVarDef = try (symbol "let") <|> try (symbol "var") <|> symbol "const"
 
 -- mongoose.Schema or Schema
-schemaFun :: Parser String
-schemaFun = P.string "mongoose.Schema" <|> P.string "Schema"
+schemaFun :: Parser T.Text
+schemaFun = try (symbol "mongoose.Schema") <|> symbol "Schema"
 
 -- String within two given characters
 strWithin :: Char -> Char -> Parser String
 strWithin a b = do
-  P.char a >> s
-  P.anyChar `P.manyTill` lookAhead (P.char b)
+  PStr.char a >> s
+  P.anySingle `P.manyTill` lookAhead (PStr.char b)
