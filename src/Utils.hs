@@ -1,10 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Logger where
+module Utils where
 
-import           Data.Text             as T (pack, replace, unpack)
+import           Data.Text             as T (Text, pack, replace, unpack)
+import           Data.Void             (Void)
 import           System.Console.Pretty (Color (Green, Red, Yellow),
                                         Pretty (color, style), Style (Bold))
 import           System.IO             (hPutStr, hPutStrLn, stderr, stdout)
+import           Text.Megaparsec       as P (Parsec)
+
+type Parser = Parsec Void T.Text
 
 logSuccess :: Bool -> String -> IO ()
 logSuccess stdoutMode toLog = do

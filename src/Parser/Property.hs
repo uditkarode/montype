@@ -1,19 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Parser.Property where
 
-import           Control.Applicative
+import           Control.Applicative      (optional)
 import           Data.List                (union)
 import           Data.Text                (Text)
 import qualified Data.Text                as T
-import           Data.Void
-import           Text.Megaparsec          as P
-import           Text.Megaparsec.Char     as PStr
+import           Text.Megaparsec          as P (MonadParsec (lookAhead, try),
+                                                anySingle, manyTill, oneOf,
+                                                optional, (<|>))
+import           Text.Megaparsec.Char     as PStr (char)
 
 import           Parser.Descriptor        (getDescriptor)
 import           Parser.Descriptors.Types (Descriptor)
 import           Parser.Miscellaneous     (commaSep, curly, identifier, s)
-
-type Parser = Parsec Void T.Text
+import           Utils                    (Parser)
 
 data Property
   = Property Text Descriptor

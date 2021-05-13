@@ -3,14 +3,13 @@ module Parser.Descriptors.Helpers where
 
 import           Data.Maybe               (mapMaybe)
 import qualified Data.Text                as T
-import           Data.Void
 import           Parser.Descriptors.Types (Descriptor (Descriptor, Final),
                                            TreeEndDescriptor (Literal, TreeEndDescriptor))
 import           Parser.Miscellaneous     (identifier, s)
-import           Text.Megaparsec          as P
-import           Text.Megaparsec.Char     as PStr
-
-type Parser = Parsec Void T.Text
+import           Text.Megaparsec          as P (MonadParsec (lookAhead, try),
+                                                anySingle, manyTill, (<|>))
+import           Text.Megaparsec.Char     as PStr (char, string)
+import           Utils                    (Parser)
 
 -- searches for a in [(a, b)]
 -- and returns Just b if found

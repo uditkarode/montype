@@ -3,9 +3,8 @@ module Parser.Descriptors.Object where
 
 import           Data.Text                  (Text)
 import qualified Data.Text                  as T
-import           Data.Void
-import           Text.Megaparsec            as P
-import           Text.Megaparsec.Char       as PStr
+import           Text.Megaparsec            as P ((<|>))
+import           Text.Megaparsec.Char       as PStr (char)
 
 import           Parser.Descriptors.Array   (arrayDescriptor)
 import           Parser.Descriptors.Helpers (anyDescriptor, justDescriptor,
@@ -13,8 +12,7 @@ import           Parser.Descriptors.Helpers (anyDescriptor, justDescriptor,
 import           Parser.Descriptors.Types   (Descriptor (Descriptor, Final, IntermediateObject, NoValue),
                                              TreeEndDescriptor (TreeEndDescriptor))
 import           Parser.Miscellaneous       (commaSep, curly, identifier, s)
-
-type Parser = Parsec Void T.Text
+import           Utils                      (Parser)
 
 -- used to implement trailing comma
 emptyObj :: Parser (Text, Descriptor)

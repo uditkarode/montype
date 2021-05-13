@@ -1,11 +1,8 @@
 module Parser.Descriptors.Object where
 
-import           Data.Text                as T
-import           Data.Void
-import           Parser.Descriptors.Types (Descriptor)
-import           Text.Megaparsec          as P
+import           Utils                    (Parser)
 
-type Parser = Parsec Void T.Text
+import           Parser.Descriptors.Types (Descriptor)
 
 -- Since an object can contain an array
 -- but an array can also contain an

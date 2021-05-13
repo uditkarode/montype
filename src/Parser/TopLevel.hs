@@ -2,17 +2,12 @@
 module Parser.TopLevel where
 
 import           Data.Text            (Text)
-
-import qualified Data.Text            as T
-import           Data.Void
-import           Text.Megaparsec      as P
-import           Text.Megaparsec.Char as PStr
+import           Text.Megaparsec      as P (Parsec, anySingle, manyTill)
 
 import           Parser.Miscellaneous (identifier, jsVarDef, parens, s, s1,
                                        schemaFun, symbol)
 import           Parser.Property      (Property, schemaProperties)
-
-type Parser = Parsec Void T.Text
+import           Utils                (Parser)
 
 -- takes: the entire schema
 -- provides: tuple of variable name and list of properties

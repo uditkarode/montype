@@ -1,15 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Parser.Miscellaneous where
 
-import           Data.Void
-
-import           Data.Functor
+import           Data.Functor               ((<&>))
 import qualified Data.Text                  as T
-import           Text.Megaparsec            as P
-import           Text.Megaparsec.Char       as PStr
+import           Text.Megaparsec            as P (MonadParsec (lookAhead, try),
+                                                  anySingle, between, many,
+                                                  manyTill, sepBy, skipMany,
+                                                  skipSome, (<|>))
+import           Text.Megaparsec.Char       as PStr (alphaNumChar, char,
+                                                     letterChar, newline, space,
+                                                     space1)
 import qualified Text.Megaparsec.Char.Lexer as PLex
-
-type Parser = Parsec Void T.Text
+import           Utils                      (Parser)
 
 sc :: Parser ()
 sc = PLex.space

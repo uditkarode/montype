@@ -27,9 +27,9 @@ import           Text.Megaparsec         as P (ShowErrorComponent (showErrorComp
 
 import           Codegen.Codegen         (makeInterface)
 import           Codegen.Helpers         (myFoldM)
-import           Logger                  (logError, logMultiLineError,
-                                          logSuccess, logSuccessLn, logWarning)
 import           Parser.TopLevel         (schema)
+import           Utils                   (logError, logMultiLineError,
+                                          logSuccess, logSuccessLn, logWarning)
 
 
 data CliArgs = CliArgs
