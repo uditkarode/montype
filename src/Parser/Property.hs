@@ -51,7 +51,7 @@ anyTokenS = do
     Just parsed -> P.anySingle
 
 -- parses any text with spaces until a ',' or '}'
--- is encountered, and the ',' or '}' is not consumed
+-- is encountered; the ',' or '}' is not consumed
 rightSide :: Parser String
 rightSide = anyTokenS `P.manyTill` (s >> lookAhead (P.oneOf [',', '}']))
 

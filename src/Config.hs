@@ -5,7 +5,7 @@ import           Data.Map  as M (Map, fromList, lookup)
 import           Data.Text (Text)
 import qualified Data.Text as T
 
--- get the value that an AST type maps to
+-- get the value that an AST type maps to.
 -- error out if no value can be found, since
 -- generating faulty interfaces is not a choice
 getMapped :: Text -> M.Map Text Text -> Either String Text

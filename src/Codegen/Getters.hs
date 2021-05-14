@@ -2,10 +2,14 @@
 
 module Codegen.Getters where
 
+import                          Data.Either.Combinators
 import                          Data.List                (find)
 import                qualified Data.Map                 as M
 import                          Data.Maybe               (fromJust, isJust)
-import                          Data.Text                as T (Text, replicate)
+import                          Data.Text                as T (Text, pack,
+                                                               replicate,
+                                                               unpack)
+import                          Text.Megaparsec          as P (parse)
 
 import {-# SOURCE #-}           Codegen.Helpers          (getTsType, myFoldM,
                                                           tab)
@@ -13,6 +17,11 @@ import                          Config                   (getMapped)
 import                          Parser.Descriptors.Types (Descriptor (NoValue),
                                                           SchemaArray (..),
                                                           TreeEndDescriptor (..))
+import                          Parser.Miscellaneous     (arrProps)
+
+
+myFoldl :: Foldable t => t a -> b -> (b -> a -> b) -> b
+myFoldl list def func = foldl func def list
 
 -- TreeEndDescriptor -> TS
 getFinal :: TreeEndDescriptor -> M.Map Text Text -> Either String Text
@@ -22,6 +31,20 @@ getFinal (TreeEndDescriptor ("Map", props)) userTypes = do
     Right $ "Map<string, " <> fromJust ofType <> ">"
   else
     Right "mongoose.Schema.Types.Map"
+
+getFinal (TreeEndDescriptor ("String", props)) userTypes = do
+  let enumArrStr = (fmap snd . find ((== "enum") . fst)) props
+  if isJust enumArrStr then do
+    -- if string contains enum validator, use it to generate the type instead
+      let values = P.parse arrProps "" (fromJust enumArrStr)
+      if isLeft values then Left ("invalid enum array found: " <> T.unpack (fromJust enumArrStr))
+      else do
+        let vals = fromRight' values
+        let tsType = myFoldl vals "" $ \acc curr -> acc <> "'" <> curr <> "' | "
+        Right $ T.pack (init $ init $ init tsType)
+  else
+    -- if string doesn't contain enum validator, just map it as always
+    getMapped "String" userTypes
 
 getFinal (TreeEndDescriptor (t, _)) userTypes     = getMapped t userTypes
 getFinal (Literal t) userTypes                    = Right t

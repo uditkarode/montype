@@ -31,9 +31,14 @@ commaSep p = P.sepBy p (symbol ",")
 
 lexeme = PLex.lexeme sc
 
+sinQuotes = between (symbol "'") (symbol "'")
+
+doubQuotes = between (symbol "\"") (symbol "\"")
+
 identifier' :: Parser String
 identifier' = lexeme ((:) <$> (letterChar <|> PStr.char '_') <*> many (alphaNumChar <|> PStr.char '_'))
 
+-- parse a Javascript identifier
 identifier :: Parser T.Text
 identifier = identifier' <&> T.pack
 
@@ -53,8 +58,13 @@ jsVarDef = try (symbol "let") <|> try (symbol "var") <|> symbol "const"
 schemaFun :: Parser T.Text
 schemaFun = try (symbol "mongoose.Schema") <|> symbol "Schema"
 
--- String within two given characters
-strWithin :: Char -> Char -> Parser String
-strWithin a b = do
-  PStr.char a >> s
-  P.anySingle `P.manyTill` lookAhead (PStr.char b)
+strLiteral :: Parser String
+strLiteral = PStr.char '"' >> PLex.charLiteral `manyTill` PStr.char '"'
+
+altStrLiteral :: Parser String
+altStrLiteral = PStr.char '\'' >> PLex.charLiteral `manyTill` PStr.char '\''
+
+-- parses ['a', 'b', 'c']
+arrProps :: Parser [String]
+arrProps = squareBrackets $ commaSep (try strLiteral <|> altStrLiteral)
+

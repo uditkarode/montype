@@ -50,7 +50,7 @@ makeFinal val = do
 -- parses an object and returns an IntermediateObject
 -- or a Final TreeEndDescriptor, where an IntermediateObject
 -- is a nested object while a Final TreeEndDescriptor is an object
--- that contains the `type` descriptor
+-- that contains the `type` property
 objDescriptor :: Parser Descriptor
 objDescriptor = do
   val <- propertiesDesc
