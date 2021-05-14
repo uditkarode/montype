@@ -46,8 +46,12 @@ getFinal (TreeEndDescriptor ("String", props)) userTypes = do
     -- if string doesn't contain enum validator, just map it as always
     getMapped "String" userTypes
 
-getFinal (TreeEndDescriptor (t, _)) userTypes     = getMapped t userTypes
-getFinal (Literal t) userTypes                    = Right t
+getFinal (TreeEndDescriptor (t, _)) userTypes = getMapped t userTypes
+
+getFinal (Literal l) userTypes = do
+  -- allow user to overwrite literal types
+  let mapped = getMapped l userTypes
+  if isLeft mapped then Right l else Right (fromRight' mapped)
 
 -- SchemaArray -> TS
 getSchemaArrStr :: SchemaArray -> M.Map Text Text -> Either String Text
