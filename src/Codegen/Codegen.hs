@@ -14,7 +14,7 @@ import           Parser.Property (Property (ObjectProperty, Property))
 makeInterface :: Text -> [Property] -> M.Map Text Text -> Either String Text
 makeInterface name properties userTypes = props >>= \i -> pure $ start <> i <> end
   where
-    start = "interface " <> name <> " {\n"
+    start = "export interface " <> name <> " {\n"
     props =
       myFoldM properties "" $ \acc curr -> do
         case curr of
