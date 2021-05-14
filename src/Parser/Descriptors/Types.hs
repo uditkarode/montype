@@ -19,6 +19,8 @@ data Descriptor
   | IntermediateObject [(Text, Descriptor)]
     -- | end of nesting, defines the final type
   | Final TreeEndDescriptor
+    -- | used for the `enum` property for String
+  | StrArr [String]
     -- | to be ignored, used to implement trailing comma
   | NoValue
   deriving (Eq, Ord, Show)

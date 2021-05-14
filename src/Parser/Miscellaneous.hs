@@ -11,6 +11,8 @@ import           Text.Megaparsec.Char       as PStr (alphaNumChar, char,
                                                      letterChar, newline, space,
                                                      space1)
 import qualified Text.Megaparsec.Char.Lexer as PLex
+
+import           Parser.Descriptors.Types   (Descriptor (StrArr))
 import           Utils                      (Parser)
 
 sc :: Parser ()
@@ -65,6 +67,10 @@ altStrLiteral :: Parser String
 altStrLiteral = PStr.char '\'' >> PLex.charLiteral `manyTill` PStr.char '\''
 
 -- parses ['a', 'b', 'c']
-arrProps :: Parser [String]
-arrProps = squareBrackets $ commaSep (try strLiteral <|> altStrLiteral)
+arrProps :: Parser Descriptor
+arrProps = do
+  val <- squareBrackets $ commaSep (try strLiteral <|> altStrLiteral)
+  pure $ StrArr val
 
+arrProps' :: Parser [String]
+arrProps' = squareBrackets $ commaSep (try strLiteral <|> altStrLiteral)

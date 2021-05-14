@@ -48,8 +48,8 @@ schemaTypeDescriptor = do
   pure $ Final $ Literal $ "mongoose.Schema.Types." <> res
 
 -- matches any one of the arguments or schemaTypeDescriptor
--- the params weren't supposed to be arguments since they'll
--- always be the same, but since modules can't have circular
+-- the params weren't supposed to be arguments since all but the last
+-- will always be the same, but since modules can't have circular
 -- links, this was necessary
 anyDescriptor ::
      Parser Descriptor
@@ -59,3 +59,13 @@ anyDescriptor ::
 anyDescriptor objDescriptor arrayDescriptor fallbackDescriptor =
   try objDescriptor <|> try arrayDescriptor <|> try schemaTypeDescriptor <|>
   fallbackDescriptor
+
+anyDescriptor' ::
+     Parser Descriptor
+  -> Parser Descriptor
+  -> Parser Descriptor
+  -> Parser Descriptor
+  -> Parser Descriptor
+anyDescriptor' objDescriptor arrayDescriptor fallbackDescriptor lastTryDescriptor =
+  try objDescriptor <|> try arrayDescriptor <|> try schemaTypeDescriptor <|>
+  try fallbackDescriptor <|> lastTryDescriptor

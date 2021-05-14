@@ -7,11 +7,12 @@ import           Text.Megaparsec            as P ((<|>))
 import           Text.Megaparsec.Char       as PStr (char)
 
 import           Parser.Descriptors.Array   (arrayDescriptor)
-import           Parser.Descriptors.Helpers (anyDescriptor, justDescriptor,
-                                             myMap, search)
-import           Parser.Descriptors.Types   (Descriptor (Descriptor, Final, IntermediateObject, NoValue),
+import           Parser.Descriptors.Helpers (anyDescriptor, anyDescriptor',
+                                             justDescriptor, myMap, search)
+import           Parser.Descriptors.Types   (Descriptor (Descriptor, Final, IntermediateObject, NoValue, StrArr),
                                              TreeEndDescriptor (TreeEndDescriptor))
-import           Parser.Miscellaneous       (commaSep, curly, identifier, s)
+import           Parser.Miscellaneous       (arrProps, commaSep, curly,
+                                             identifier, s)
 import           Utils                      (Parser)
 
 -- used to implement trailing comma
@@ -24,7 +25,7 @@ propertyDesc = do
   s
   key <- identifier
   s >> PStr.char ':' >> s
-  val <- anyDescriptor objDescriptor arrayDescriptor justDescriptor
+  val <- anyDescriptor' objDescriptor arrayDescriptor arrProps justDescriptor
   s
   pure (key, val)
 
@@ -37,7 +38,9 @@ propertiesDesc = do
 -- only used when a TreeEndDescriptor is encountered
 -- converts a [(String, Descriptor)] to [(String, String)]
 -- only pattern matches Descriptor because a TreeEndDescriptor
--- can not have further nesting
+-- can not have further nesting. However, it can have an StrArr
+-- value, which we just enter back as a string. It will be parsed
+-- properly once again during codegen.
 makeFinal :: [(Text, Descriptor)] -> [(Text, Text)]
 makeFinal val = do
   myMap val $ \x ->
@@ -46,6 +49,7 @@ makeFinal val = do
         if fst x == "type"
           then Nothing
           else Just (fst x, d)
+      StrArr d -> Just (fst x, T.pack $ show d)
 
 -- parses an object and returns an IntermediateObject
 -- or a Final TreeEndDescriptor, where an IntermediateObject

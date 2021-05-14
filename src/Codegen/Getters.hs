@@ -17,7 +17,7 @@ import                          Config                   (getMapped)
 import                          Parser.Descriptors.Types (Descriptor (NoValue),
                                                           SchemaArray (..),
                                                           TreeEndDescriptor (..))
-import                          Parser.Miscellaneous     (arrProps)
+import                          Parser.Miscellaneous     (arrProps, arrProps')
 
 
 myFoldl :: Foldable t => t a -> b -> (b -> a -> b) -> b
@@ -36,7 +36,7 @@ getFinal (TreeEndDescriptor ("String", props)) userTypes = do
   let enumArrStr = (fmap snd . find ((== "enum") . fst)) props
   if isJust enumArrStr then do
     -- if string contains enum validator, use it to generate the type instead
-      let values = P.parse arrProps "" (fromJust enumArrStr)
+      let values = P.parse arrProps' "" (fromJust enumArrStr)
       if isLeft values then Left ("invalid enum array found: " <> T.unpack (fromJust enumArrStr))
       else do
         let vals = fromRight' values
