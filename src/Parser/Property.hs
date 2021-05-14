@@ -85,7 +85,7 @@ getPropsFromOptions options = do
       -- adds a string casted object ID to the schema
       "id" -> if val == "true" then acc <> [ObjectProperty "id" "string"] else acc
       -- adds an object ID to the schema without string casting it
-      "_id" -> if val == "true" then acc <> [ObjectProperty "_id" "Schema.Types.ObjectId"] else acc
+      "_id" -> if val == "true" then acc <> [ObjectProperty "_id" "mongoose.Schema.Types.ObjectId"] else acc
       -- adds createdAt and updatedAt values to the schema
       "timestamps" -> if val == "true" then acc <> [ObjectProperty "createdAt" "Date", ObjectProperty "updatedAt" "Date"] else acc
       -- discard options that are unsupported / don't add anything to the schema
