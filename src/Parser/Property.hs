@@ -43,7 +43,7 @@ schemaProperty = do
 -- spaces in between
 anyTokenS :: Parser Char
 anyTokenS = do
-  v <- optional (try P.anySingle)
+  v <- optional (try $ lookAhead P.anySingle)
   case v of
     Nothing -> do
       s
@@ -87,7 +87,7 @@ getPropsFromOptions options = do
       -- adds an object ID to the schema without string casting it
       "_id" -> if val == "true" then acc <> [ObjectProperty "_id" "Schema.Types.ObjectId"] else acc
       -- adds createdAt and updatedAt values to the schema
-      "timestamps" -> acc <> [ObjectProperty "createdAt" "Date", ObjectProperty "updatedAt" "Date"]
+      "timestamps" -> if val == "true" then acc <> [ObjectProperty "createdAt" "Date", ObjectProperty "updatedAt" "Date"] else acc
       -- discard options that are unsupported / don't add anything to the schema
       _    -> acc
 
