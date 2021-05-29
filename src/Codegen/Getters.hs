@@ -29,8 +29,9 @@ getFinal (TreeEndDescriptor ("Map", props)) userTypes = do
   let ofType = (fmap snd . find ((== "of") . fst)) props
   if isJust ofType then do
     Right $ "Map<string, " <> fromJust ofType <> ">"
-  else
-    Right "mongoose.Schema.Types.Map"
+  else do
+    let propName = "mongoose.Schema.Types.Map"
+    Right $ fromRight propName (getMapped propName userTypes)
 
 getFinal (TreeEndDescriptor ("String", props)) userTypes = do
   let enumArrStr = (fmap snd . find ((== "enum") . fst)) props
