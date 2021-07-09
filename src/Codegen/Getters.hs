@@ -41,8 +41,8 @@ getFinal (TreeEndDescriptor ("String", props)) userTypes = do
       if isLeft values then Left ("invalid enum array found: " <> T.unpack (fromJust enumArrStr))
       else do
         let vals = fromRight' values
-        let tsType = myFoldl vals "" $ \acc curr -> acc <> "'" <> curr <> "' | "
-        Right $ T.pack (init $ init $ init tsType)
+        let tsType = myFoldl vals "(" $ \acc curr -> acc <> "'" <> curr <> "' | "
+        Right $ T.pack (init $ init $ init tsType) <> ")"
   else
     -- if string doesn't contain enum validator, just map it as always
     getMapped "String" userTypes
