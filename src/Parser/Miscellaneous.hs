@@ -60,6 +60,13 @@ jsVarDef = try (symbol "let") <|> try (symbol "var") <|> symbol "const"
 schemaFun :: Parser T.Text
 schemaFun = try (symbol "mongoose.Schema") <|> symbol "Schema"
 
+-- <type>
+schemaType :: Parser T.Text
+schemaType = do
+  symbol "<"
+  identifier
+  symbol ">"
+
 strLiteral :: Parser String
 strLiteral = PStr.char '"' >> PLex.charLiteral `manyTill` PStr.char '"'
 

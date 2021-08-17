@@ -2,10 +2,10 @@
 module Parser.TopLevel where
 
 import           Data.Text            (Text)
-import           Text.Megaparsec      as P (Parsec, anySingle, manyTill)
+import           Text.Megaparsec      as P (Parsec, anySingle, manyTill, try)
 
 import           Parser.Miscellaneous (identifier, jsVarDef, parens, s, s1,
-                                       schemaFun, symbol)
+                                       schemaFun, symbol, schemaType)
 import           Parser.Property      (Property, schemaProperties)
 import           Utils                (Parser)
 
@@ -18,5 +18,6 @@ schema = do
   symbol "="
   symbol "new"
   schemaFun
+  try schemaType
   modelContent <- parens schemaProperties
   pure (modelName, modelContent)
