@@ -1,7 +1,7 @@
 cabal-version:       >=1.10
 
 name:                MonType
-version:             0.3.2
+version:             0.4.0
 description:         Generate TypeScript type definitions for Mongoose models.
 license-file:        LICENSE
 author:              Udit Karode
