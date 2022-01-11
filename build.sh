@@ -17,7 +17,7 @@ function check_installed() {
 echo '-------------- building release binary --------------'
 
 if [ "$(check_installed cabal)" = "true" ]; then
-    cabal new-build -O2 --disable-debug-info --enable-executable-stripping --enable-library-stripping --disable-debug-info --disable-library-for-ghci --enable-split-sections
+    cabal new-build -O2 --disable-debug-info --enable-executable-stripping --enable-library-stripping --disable-debug-info --disable-library-for-ghci all --ghc-options "-funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math -no-recomp"
 else
     echo -e "${RED}[fatal]${NC}: ${1} executable not found, cannot proceed"; exit
 fi
