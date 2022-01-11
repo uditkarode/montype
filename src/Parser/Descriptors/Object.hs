@@ -73,6 +73,5 @@ objDescriptor = do
     Just x -> do
       case x of
         Descriptor t -> pure (Final (TreeEndDescriptor (t, makeFinal val)))
-        Array t -> case t of
-          SchemaArray z -> pure (Final z)
+        Array t -> pure $ Array t
         Final t -> pure $ Final t
