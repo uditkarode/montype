@@ -1,18 +1,24 @@
 module Parser.Descriptors.Array where
 
-import                qualified Data.Text                  as T
-import                          Data.Void
-import                          Parser.Descriptors.Helpers (anyDescriptor,
-                                                            shorthandDescriptor)
-import {-# SOURCE #-}           Parser.Descriptors.Object  (objDescriptor)
-import                          Parser.Descriptors.Types   (Descriptor (Array, Final, Shorthand),
-                                                            SchemaArray (Nested, NoItems, SchemaArray),
-                                                            TreeEndDescriptor (TreeEndDescriptor))
-import                          Parser.Miscellaneous       (s, squareBrackets)
-import                          Text.Megaparsec            as P (Parsec,
-                                                                 getSourcePos,
-                                                                 try, (<|>))
-import                          Text.Megaparsec.Char
+import qualified Data.Text as T
+import Data.Void
+import Parser.Descriptors.Helpers
+  ( anyDescriptor,
+    shorthandDescriptor,
+  )
+import {-# SOURCE #-} Parser.Descriptors.Object (objDescriptor)
+import Parser.Descriptors.Types
+  ( Descriptor (Array, Final, Shorthand),
+    SchemaArray (Nested, NoItems, SchemaArray),
+    TreeEndDescriptor (TreeEndDescriptor),
+  )
+import Parser.Miscellaneous (s, squareBrackets)
+import Text.Megaparsec as P
+  ( Parsec,
+    getSourcePos,
+    try,
+    (<|>),
+  )
 
 type Parser = Parsec Void T.Text
 
@@ -28,24 +34,26 @@ empty = do
 arrayMaker :: Parser Descriptor
 arrayMaker = do
   res <-
-    try (anyDescriptor objDescriptor arrayDescriptor shorthandDescriptor) <|>
-    try empty
-  case res
-        -- This array contains a Final type
-        of
+    try (anyDescriptor objDescriptor arrayDescriptor shorthandDescriptor)
+      <|> try empty
+  case res of
+    -- This array contains a Final type
+
     Final x -> pure $ Array (SchemaArray x)
-        -- This array contains another array
+    -- This array contains another array
     Array y ->
       case y of
         NoItems -> pure $ Array (Nested NoItems)
-        _       -> pure $ Array (Nested y)
-        -- This array contains a Final type in the form of a Shorthand descriptor
+        _ -> pure $ Array (Nested y)
+    -- This array contains a Final type in the form of a Shorthand descriptor
     Shorthand z -> pure $ Array (SchemaArray (TreeEndDescriptor (z, [])))
     _ -> do
       pos <- getSourcePos
       error $
-        "Element inside array must be a final property or another array! Found: " <>
-        show res <> " at " <> show pos
+        "Element inside array must be a final property or another array! Found: "
+          <> show res
+          <> " at "
+          <> show pos
 
 -- Passes the contents of the
 -- parsed array to arrayMaker
