@@ -1,13 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Parser.TopLevel where
 
-import           Data.Text            (Text)
-import           Text.Megaparsec      as P (Parsec, anySingle, manyTill, try)
-
-import           Parser.Miscellaneous (identifier, jsVarDef, parens, s, s1,
-                                       schemaFun, symbol, schemaType)
-import           Parser.Property      (Property, schemaProperties)
-import           Utils                (Parser)
+import Data.Text (Text)
+import Parser.Miscellaneous
+  ( identifier,
+    jsVarDef,
+    parens,
+    s,
+    s1,
+    schemaFun,
+    schemaType,
+    symbol,
+  )
+import Parser.Property (Property, schemaProperties)
+import Text.Megaparsec as P (Parsec, anySingle, manyTill, optional, try)
+import Utils (Parser)
 
 -- takes: the entire schema
 -- provides: tuple of variable name and list of properties
@@ -18,6 +26,6 @@ schema = do
   symbol "="
   symbol "new"
   schemaFun
-  try schemaType
+  optional schemaType
   modelContent <- parens schemaProperties
   pure (modelName, modelContent)
