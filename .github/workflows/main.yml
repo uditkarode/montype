@@ -8,14 +8,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: haskell:8.8.4-buster
+      image: haskell:9.2.4-buster
     steps:
       - run: git clone https://github.com/uditkarode/montype /montype
       - run: apt update
       - run: apt install --yes wget
-      - run: wget https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz
-      - run: tar -xvf upx-3.96-amd64_linux.tar.xz
-      - run: mv upx-3.96-amd64_linux/upx /usr/local/bin/
+      - run: wget https://github.com/uditkarode/built_upx/releases/download/master%4041825ff24f35ad2a02dafba7744191cca09711f0/upx
+      - run: chmod +x upx
+      - run: mv upx /usr/local/bin/
       - run: cabal update
       - run: cd /montype && bash build.sh
       - uses: actions/upload-artifact@v2
