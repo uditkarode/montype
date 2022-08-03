@@ -70,7 +70,9 @@ schemaOption = do
 schemaOptions :: Parser [(Text, Text)]
 schemaOptions = do
   s >> PStr.char ',' >> s
-  curly $ commaSep (schemaOption <|> emptyOption)
+  v <- curly $ commaSep (schemaOption <|> emptyOption)
+  try $ PStr.char ',' >> s
+  pure v
 
 myFoldl :: Foldable t => t a -> b -> (b -> a -> b) -> b
 myFoldl list def func = foldl func def list
