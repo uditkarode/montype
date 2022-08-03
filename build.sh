@@ -23,17 +23,17 @@ else
 fi
 
 if [ "$(check_installed strip)" == "true" ]; then
-    strip dist-newstyle/build/x86_64-linux/ghc-8.8.4/MonType-*/x/MonType/opt/build/MonType/MonType
+    strip dist-newstyle/build/x86_64-linux/ghc-*/MonType-*/x/MonType/opt/build/MonType/MonType
 else
     echo -e "${YELLOW}[warn]${NC}: 'strip' not found in PATH, not stripping executable"
 fi
 
 if [ "$(check_installed upx)" == "true" ]; then
     rm -f montype
-    upx -9 dist-newstyle/build/x86_64-linux/ghc-8.8.4/MonType-*/x/MonType/opt/build/MonType/MonType -o montype
+    upx -9 dist-newstyle/build/x86_64-linux/ghc-*/MonType-*/x/MonType/opt/build/MonType/MonType -o montype
     echo -e "${GREEN}[success]${NC}: release binary saved to 'montype'!"
 else
     echo -e "${YELLOW}[warn]${NC}: 'upx' not found in PATH, not compressing executable"
-    cp dist-newstyle/build/x86_64-linux/ghc-8.8.4/MonType-*/x/MonType/opt/build/MonType/MonType montype
+    cp dist-newstyle/build/x86_64-linux/ghc-*/MonType-*/x/MonType/opt/build/MonType/MonType montype
     echo "${GREEN}[success]${NC}: release binary saved to 'montype'!"
 fi
