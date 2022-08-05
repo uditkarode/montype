@@ -54,7 +54,13 @@ s1 = PStr.space <|> P.skipSome PStr.newline
 
 -- var, let, or const
 jsVarDef :: Parser T.Text
-jsVarDef = try (symbol "let") <|> try (symbol "var") <|> symbol "const"
+jsVarDef = do
+  try (symbol "let") <|> try (symbol "var") <|> symbol "const"
+  lookAhead $ do
+    identifier
+    symbol "="
+    symbol "new"
+    schemaFun
 
 -- mongoose.Schema or Schema
 schemaFun :: Parser T.Text

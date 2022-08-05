@@ -21,7 +21,7 @@ import Utils (Parser)
 -- provides: tuple of variable name and list of properties
 schema :: Parser (Text, [Property])
 schema = do
-  P.anySingle `P.manyTill` jsVarDef
+  P.anySingle `P.manyTill` (try jsVarDef)
   modelName <- identifier
   symbol "="
   symbol "new"
