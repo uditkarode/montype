@@ -1,6 +1,6 @@
 {
   "name": "montype",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Generate TypeScript interfaces from your Mongoose schemas",
   "main": "index.js",
   "repository": "https://github.com/uditkarode/montype",
