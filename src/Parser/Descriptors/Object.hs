@@ -8,6 +8,7 @@ import Parser.Descriptors.Array (arrayDescriptor)
 import Parser.Descriptors.Helpers
   ( anyDescriptor,
     anyDescriptor',
+    functionDescriptor,
     justDescriptor,
     myMap,
     search,
@@ -34,7 +35,7 @@ propertyDesc = do
   s
   key <- identifier
   s >> PStr.char ':' >> s
-  val <- anyDescriptor' objDescriptor arrayDescriptor arrProps justDescriptor
+  val <- anyDescriptor' objDescriptor arrayDescriptor arrProps functionDescriptor justDescriptor
   s
   pure (key, val)
 

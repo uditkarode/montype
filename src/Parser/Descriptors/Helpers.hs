@@ -1,21 +1,29 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Parser.Descriptors.Helpers where
 
-import           Data.Maybe               (mapMaybe)
-import qualified Data.Text                as T
-import           Parser.Descriptors.Types (Descriptor (Descriptor, Final),
-                                           TreeEndDescriptor (Literal, TreeEndDescriptor))
-import           Parser.Miscellaneous     (identifier, s)
-import           Text.Megaparsec          as P (MonadParsec (lookAhead, try),
-                                                anySingle, manyTill, (<|>))
-import           Text.Megaparsec.Char     as PStr (char, string)
-import           Utils                    (Parser)
+import Data.Maybe (mapMaybe)
+import qualified Data.Text as T
+import Parser.Descriptors.Types
+  ( Descriptor (Descriptor, Final),
+    TreeEndDescriptor (Literal, TreeEndDescriptor),
+  )
+import Parser.Miscellaneous (identifier, s)
+import Text.Megaparsec as P
+  ( MonadParsec (lookAhead, try),
+    anySingle,
+    manyTill,
+    (<|>),
+  )
+import Text.Megaparsec.Char as PStr (char, string)
+import qualified Text.Megaparsec.Char.Lexer as PLex
+import Utils (Parser)
 
 -- searches for a in [(a, b)]
 -- and returns Just b if found
 search :: Eq a => a -> [(a, b)] -> Maybe b
 search a [] = Nothing
-search a (x:xs)
+search a (x : xs)
   | fst x == a = pure $ snd x
   | otherwise = search a xs
 
@@ -38,6 +46,19 @@ shorthandDescriptor = do
   i <- identifier
   pure $ Final $ TreeEndDescriptor (i, [])
 
+anyChar :: Parser ()
+anyChar = do
+  PLex.charLiteral
+  pure ()
+
+functionDescriptor :: Parser Descriptor
+functionDescriptor = do
+  PStr.string "(" >> s
+  (anyChar <|> s) `P.manyTill` PStr.string ")"
+  s >> PStr.string "=>" >> s
+  (PStr.string "{" >> s >> (anyChar <|> s) `P.manyTill` PStr.string "}") <|> anyChar `P.manyTill` (PStr.char ',' <|> PStr.char '}')
+  pure $ Descriptor "_function"
+
 -- parses Schema.Types.X or mongoose.Schema.Types.X
 -- and returns Types.X -- this is to remove ambiguity
 -- about the way mongoose is imported
@@ -52,20 +73,23 @@ schemaTypeDescriptor = do
 -- will always be the same, but since modules can't have circular
 -- links, this was necessary
 anyDescriptor ::
-     Parser Descriptor
-  -> Parser Descriptor
-  -> Parser Descriptor
-  -> Parser Descriptor
+  Parser Descriptor ->
+  Parser Descriptor ->
+  Parser Descriptor ->
+  Parser Descriptor
 anyDescriptor objDescriptor arrayDescriptor fallbackDescriptor =
-  try objDescriptor <|> try arrayDescriptor <|> try schemaTypeDescriptor <|>
-  fallbackDescriptor
+  try objDescriptor <|> try arrayDescriptor <|> try schemaTypeDescriptor
+    <|> fallbackDescriptor
 
 anyDescriptor' ::
-     Parser Descriptor
-  -> Parser Descriptor
-  -> Parser Descriptor
-  -> Parser Descriptor
-  -> Parser Descriptor
-anyDescriptor' objDescriptor arrayDescriptor fallbackDescriptor lastTryDescriptor =
-  try objDescriptor <|> try arrayDescriptor <|> try schemaTypeDescriptor <|>
-  try fallbackDescriptor <|> lastTryDescriptor
+  Parser Descriptor ->
+  Parser Descriptor ->
+  Parser Descriptor ->
+  Parser Descriptor ->
+  Parser Descriptor ->
+  Parser Descriptor
+anyDescriptor' objDescriptor arrayDescriptor fallbackDescriptor functionDescriptor lastTryDescriptor =
+  try objDescriptor <|> try arrayDescriptor <|> try schemaTypeDescriptor
+    <|> try functionDescriptor
+    <|> try fallbackDescriptor
+    <|> lastTryDescriptor
