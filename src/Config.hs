@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Config where
 
-import           Data.Map  as M (Map, fromList, lookup)
-import           Data.Text (Text)
+import Data.Map as M (Map, fromList, lookup)
+import Data.Text (Text)
 import qualified Data.Text as T
 
 -- get the value that an AST type maps to.
@@ -22,12 +23,12 @@ getMapped astType userTypes = do
 typeMap :: Map Text Text
 typeMap =
   fromList
-    [ ("String", "string")
-    , ("Number", "number")
-    , ("Date", "Date")
-    , ("Buffer", "mongoose.Schema.Types.Buffer")
-    , ("Boolean", "boolean")
-    , ("Mixed", "mongoose.Schema.Types.Mixed")
-    , ("Decimal128", "mongoose.Schema.Types.Decimal128")
-    , ("ObjectId", "mongoose.Schema.Types.ObjectId")
+    [ ("String", "string"),
+      ("Number", "number"),
+      ("Date", "Date"),
+      ("Buffer", "mongoose.Schema.Types.Buffer"),
+      ("Boolean", "boolean"),
+      ("Mixed", "mongoose.Schema.Types.Mixed"),
+      ("Decimal128", "mongoose.Schema.Types.Decimal128"),
+      ("ObjectId", "mongoose.Schema.Types.ObjectId")
     ]

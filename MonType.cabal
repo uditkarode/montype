@@ -23,8 +23,8 @@ executable MonType
                      , Codegen.Helpers
                      , Codegen.Getters
                      , Paths_MonType
-                     , Utils
                      , Config
+                     , Utils
   build-depends:       base >=4.16
                      , optparse-applicative
                      , pretty-terminal
@@ -33,6 +33,7 @@ executable MonType
                      , either
                      , megaparsec
                      , text
+                     , time
                      , ini
   hs-source-dirs:      src
   default-language:    Haskell2010
