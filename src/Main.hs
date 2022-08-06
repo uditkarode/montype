@@ -63,6 +63,9 @@ import Utils
     logSuccess,
     logSuccessLn,
     logWarning,
+    tfst,
+    tsnd,
+    tthd,
   )
 
 data CliArgs = CliArgs
@@ -116,7 +119,7 @@ cliArgs =
 
 -- read the config and return a map
 -- of custom types defined by the user
-readConfig :: String -> IO (M.Map Text Text, [Text])
+readConfig :: String -> IO (M.Map Text Text, [Text], [Text])
 readConfig path = do
   parsedIni <- readIniFile path
   if isRight parsedIni
@@ -129,6 +132,8 @@ readConfig path = do
               \typeKey ->
                 do (typeKey, fromRight' (lookupValue "types" typeKey ini))
 
+      let ignored = fromRight [] $ lookupArray "ignore" "filename" ini
+
       let imports = fromRight [] $ lookupArray "imports" "import" ini
       let froms = fromRight [] $ lookupArray "imports" "from" ini
 
@@ -140,17 +145,18 @@ readConfig path = do
           DL.zipWith
             (\i f -> "import " <> (if i == "*" then i else "{ " <> i <> " }") <> " from " <> f <> ";")
             imports
-            froms
+            froms,
+          ignored
         )
-    else pure (M.empty, [])
+    else pure (M.empty, [], [])
 
 -- output log to stderr when the program is running in
 -- stdout mode, since it can pollute the target if the
 -- result is piped to something else
-excCatcher :: Bool -> IOException -> IO (M.Map Text Text, [Text])
+excCatcher :: Bool -> IOException -> IO (M.Map Text Text, [Text], [Text])
 excCatcher stdoutMode e = do
   logWarning stdoutMode "using default type maps\n"
-  pure (M.empty, [])
+  pure (M.empty, [], [])
 
 removeTrailing :: String -> Char -> String
 removeTrailing str char = if last str == char then removeTrailing (init str) char else str
@@ -168,7 +174,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
           <> T.pack (show utc)
           <> "\n// don't modify by hand"
           <> "\n\nimport mongoose from 'mongoose';\n\n// custom imports\n"
-          <> T.intercalate "\n" (snd config)
+          <> T.intercalate "\n" (tsnd config)
           <> "\n"
           <> suffix
 
@@ -178,7 +184,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
       dirContents <- listDirectory target
 
       -- only keep _files_ that end with .ts
-      contents <- filterM (\x -> if ".ts" `isSuffixOf` x then withCurrentDirectory target (doesFileExist x) else pure False) dirContents
+      contents <- filterM (\x -> if ".ts" `isSuffixOf` x && T.pack x `notElem` tthd config then withCurrentDirectory target (doesFileExist x) else pure False) dirContents
 
       -- fold through the files list and generate a collective interface
       interface <- myFoldM contents (header "") $ \acc curr -> do
@@ -190,7 +196,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
         if isRight result
           then do
             -- AST for current file generated
-            let currInterfaceStr = uncurry makeInterface (fromRight' result) (fst config)
+            let currInterfaceStr = uncurry makeInterface (fromRight' result) (tfst config)
 
             if isRight currInterfaceStr
               then do
@@ -224,7 +230,7 @@ montype (CliArgs target stdoutMode strictMode config out) = do
           if isRight result
             then do
               -- AST generated
-              let interfaceStr = uncurry makeInterface (fromRight' result) (fst config)
+              let interfaceStr = uncurry makeInterface (fromRight' result) (tfst config)
 
               if isRight interfaceStr
                 then do
