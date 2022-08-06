@@ -25,4 +25,4 @@ makeInterface name properties userTypes = props >>= \i -> pure $ start <> i <> e
             tsDescrip >>= \descrip -> pure $ acc <> tab <> name <> ": " <> descrip <> ";\n"
           ObjectProperty name tsType -> Right $ acc <> tab <> name <> ": " <> fromRight tsType (getMapped tsType userTypes) <> ";\n"
           _ -> Right acc
-    end = "};\n"
+    end = "}\n"
